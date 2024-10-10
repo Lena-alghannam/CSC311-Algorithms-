@@ -1,15 +1,21 @@
 public class Main {
     public static void main(String[] args) {
         OrganizationTree orgTree = new OrganizationTree();
+        Employee emp1 = new Employee(0,"Ahmad",1,10);
+        Employee emp2 = new Employee(1,"Khaled",2,8);
+        Employee emp3 = new Employee(1,"Bader",3,12);
 
-        // Add employees as per the input format (ID of parent : Name : ID : skill level)
-        orgTree.addEmployee(1, "Ahmad", 10, 0);
-        orgTree.addEmployee(2, "Khalid", 8, 1);
-        orgTree.addEmployee(3, "Bader", 12, 1);
-        orgTree.addEmployee(4, "Husam", 6, 2);
-        orgTree.addEmployee(5, "Mohammed", 9, 2);
+        orgTree.addEmployee(emp1);
+        orgTree.addEmployee(emp2);
+        orgTree.addEmployee(emp3);
+
+
+
+        //System.out.println(orgTree.findEmployee(3)); //works
+
+
 
         // Print the organization tree
-        orgTree.printTree(orgTree.getRoot(),"");
+        //orgTree.printTree(orgTree.getRoot(),"");//works
     }
 }
