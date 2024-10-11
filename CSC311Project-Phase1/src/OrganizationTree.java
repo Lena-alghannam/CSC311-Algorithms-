@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
 class OrganizationTree {
     private Employee root;  // The root of the tree (the top-level manager)
 
@@ -83,25 +86,78 @@ class OrganizationTree {
         return null;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+ // Method to find all valid combinations of employees using BFS
+ public void findAllCombinations() {
+    if (root == null) return;  // If the tree is empty, return
+    outerBFS();  // Call the outer BFS method
+}
+
+// Outer BFS traversal method
+private void outerBFS() {
+    // Initialize a queue for BFS
+    Queue<Employee> outerQueue = new LinkedList<>();
+    outerQueue.offer(root);  // Start with the root
+
+    while (!outerQueue.isEmpty()) {
+        Employee selectedNode = outerQueue.poll();  // Dequeue the front node
+        System.out.println("Outer BFS current node: " + selectedNode);  // Print the current node
+
+        // Call the inner BFS for combinations with the current node
+        innerBFS(selectedNode);  // Find valid combinations for this selected node
+
+
+        // Enqueue all subordinates for the next outer iteration
+        Employee subordinate = selectedNode.left;  // Get the first subordinate
+        while (subordinate != null) {
+            outerQueue.offer(subordinate);  // Enqueue the subordinate
+            subordinate = subordinate.right;  // Move to the next sibling
+        }
+    }
+}
+
+
+// Inner BFS traversal method to find combinations for a selected node
+private void innerBFS(Employee selectedNode) {
+    Queue<Employee> innerQueue = new LinkedList<>();
+    innerQueue.offer(root);  // Start from the root for combinations
+
+    while (!innerQueue.isEmpty()) {
+        Employee current = innerQueue.poll();  // Dequeue the front node
+
+        // Skip if it's the same node or if one is the subordinate/supervisor of the other
+        if (current.getId() != selectedNode.getId() 
+        && current.getParentID() != selectedNode.getId() 
+        && selectedNode.getParentID() != current.getId()) {
+            System.out.println("Valid Combination: " + selectedNode.getName() + " and " + current.getName());
+        }
+
+        // Enqueue subordinates for the current employee
+        Employee subordinate = current.left;
+        while (subordinate != null) {
+            innerQueue.offer(subordinate);  // Enqueue subordinates
+            subordinate = subordinate.right;  // Move to the next sibling
+        }
+    }
+}
+    //////////////////////////////////////////////////////////////////
+
 
     // Method to add a subordinate to a parent employee //added during addEmployee
     public void addSubordinate(Employee parent, Employee curr) {
-        // If the parent has no left child (first subordinate), set it
         if (parent.left == null) {
-            parent.left = curr;
+            parent.left = curr;  // Add as the first subordinate (left child)
         } else {
-            parent.right = curr;
-
-            /*
-            // If the parent has subordinates, find the rightmost sibling and add the new subordinate there
-            Employee current = parent.left;
-            while (current.right != null) {
-                current = current.right;
+            // Find the rightmost sibling
+            Employee sibling = parent.left;  
+            while (sibling.right != null) {
+                sibling = sibling.right;
             }
-            current.right = subordinate;*/
+            sibling.right = curr;  // Add the new employee as the right sibling
         }
-        curr.parent = parent;
+        curr.parent = parent;  // Set the parent reference
     }
+    
 
     // Method to print the tree (pre-order traversal)
     public void printTree(Employee employee, String indent) {
@@ -113,13 +169,6 @@ class OrganizationTree {
         // Print the next sibling (right child)
         printTree(employee.right, indent);
     }
-
-    // Method to retrieve the root of the organization
-    public Employee getRoot() {
-        return root;
-    }
-}
-
 
     // Method to retrieve the root of the organization
     public Employee getRoot() {
