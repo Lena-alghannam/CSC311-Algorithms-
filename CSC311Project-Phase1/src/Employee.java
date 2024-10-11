@@ -1,17 +1,15 @@
-// Define the Employee class to represent each node in the tree
 class Employee {
-
     int ParentID;             // Employee's unique ID
-    int id;             // Employee's unique ID
-    String name;        // Employee's name
-    int skillLevel;     // Employee's skill level
-    Employee parent;    // Reference to the parent (supervisor)
-    Employee left;      // Reference to the left child (first subordinate)
-    Employee right;     // Reference to the right sibling (next subordinate of the same parent)
+    int id;                   // Employee's unique ID
+    String name;             // Employee's name
+    int skillLevel;          // Employee's skill level
+    Employee parent;         // Reference to the parent (supervisor)
+    Employee left;          // Reference to the left child (first subordinate)
+    Employee right;         // Reference to the right sibling (next subordinate of the same parent)
 
     // Constructor to initialize the employee node
-    public Employee(int ParentID, String name, int id , int skillLevel) {
-        this.ParentID =ParentID;
+    public Employee(int ParentID, String name, int id, int skillLevel) {
+        this.ParentID = ParentID;
         this.id = id;
         this.name = name;
         this.skillLevel = skillLevel;
@@ -22,7 +20,7 @@ class Employee {
 
     public Employee() {
         this.ParentID = -1;
-        this.id = -1 ;
+        this.id = -1;
         this.name = "";
         this.skillLevel = -1;
         this.parent = null;
