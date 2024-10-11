@@ -4,18 +4,23 @@ import java.util.Queue;
 class OrganizationTree {
     private Employee root;  // The root of the tree (the top-level manager)
 
+    // Variables to track the overall optimal combination
+    private String optimalEmployee1;
+    private String optimalEmployee2;
+    private int highestOverallSkillLevel;
+
     // Constructor to initialize the organization tree
     public OrganizationTree() {
         this.root = null;
+        this.highestOverallSkillLevel = 0;  // Initialize the highest skill level to 0
     }
 
     // Method to add an employee to the tree
-    public void addEmployee(Employee curr){
-
+    public void addEmployee(Employee curr) {
         // If the employee is the root (parentId is 0), set it as the root
         if (curr.getParentID() == 0) {
             if (root == null) {
-                root = curr;
+                root = curr;  // Set the root if not already set
             } else {
                 System.out.println("Root already exists!");
             }
@@ -40,7 +45,6 @@ class OrganizationTree {
             // Check if the current node is the one we're looking for
             if (current.getId() == id) {
                 return current;
-
             }
 
             // Traverse all subordinates (use the left child to go down subordinates)
@@ -86,64 +90,84 @@ class OrganizationTree {
         return null;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
- // Method to find all valid combinations of employees using BFS
- public void findAllCombinations() {
-    if (root == null) return;  // If the tree is empty, return
-    outerBFS();  // Call the outer BFS method
-}
+    // Method to find all valid combinations of employees using BFS
+    public void findAllCombinations() {
+        if (root == null) return;  // If the tree is empty, return
+        outerBFS();  // Call the outer BFS method
 
-// Outer BFS traversal method
-private void outerBFS() {
-    // Initialize a queue for BFS
-    Queue<Employee> outerQueue = new LinkedList<>();
-    outerQueue.offer(root);  // Start with the root
-
-    while (!outerQueue.isEmpty()) {
-        Employee selectedNode = outerQueue.poll();  // Dequeue the front node
-        System.out.println("Outer BFS current node: " + selectedNode);  // Print the current node
-
-        // Call the inner BFS for combinations with the current node
-        innerBFS(selectedNode);  // Find valid combinations for this selected node
-
-
-        // Enqueue all subordinates for the next outer iteration
-        Employee subordinate = selectedNode.left;  // Get the first subordinate
-        while (subordinate != null) {
-            outerQueue.offer(subordinate);  // Enqueue the subordinate
-            subordinate = subordinate.right;  // Move to the next sibling
+        // After processing all nodes, print the overall optimal combination
+        if (optimalEmployee1 != null && optimalEmployee2 != null) {
+            System.out.println("Overall Optimal Combination: " + optimalEmployee1 + ", " + optimalEmployee2 +
+                ": Total Skill Level = " + highestOverallSkillLevel);
+        } else {
+            System.out.println("No valid combinations found.");
         }
     }
-}
 
+    // Outer BFS traversal method
+    private void outerBFS() {
+        // Initialize a queue for BFS
+        Queue<Employee> outerQueue = new LinkedList<>();
+        outerQueue.offer(root);  // Start with the root
 
-// Inner BFS traversal method to find combinations for a selected node
-private void innerBFS(Employee selectedNode) {
-    Queue<Employee> innerQueue = new LinkedList<>();
-    innerQueue.offer(root);  // Start from the root for combinations
+        while (!outerQueue.isEmpty()) {
+            Employee selectedNode = outerQueue.poll();  // Dequeue the front node
+            System.out.println("Outer BFS current node: " + selectedNode);  // Print the current node
 
-    while (!innerQueue.isEmpty()) {
-        Employee current = innerQueue.poll();  // Dequeue the front node
+            // Call the inner BFS for combinations with the current node
+            innerBFS(selectedNode);  // Find valid combinations for this selected node
 
-        // Skip if it's the same node or if one is the subordinate/supervisor of the other
-        if (current.getId() != selectedNode.getId() 
-        && current.getParentID() != selectedNode.getId() 
-        && selectedNode.getParentID() != current.getId()) {
-            System.out.println("Valid Combination: " + selectedNode.getName() + " and " + current.getName());
-        }
-
-        // Enqueue subordinates for the current employee
-        Employee subordinate = current.left;
-        while (subordinate != null) {
-            innerQueue.offer(subordinate);  // Enqueue subordinates
-            subordinate = subordinate.right;  // Move to the next sibling
+            // Enqueue all subordinates for the next outer iteration
+            Employee subordinate = selectedNode.left;  // Get the first subordinate
+            while (subordinate != null) {
+                outerQueue.offer(subordinate);  // Enqueue the subordinate
+                subordinate = subordinate.right;  // Move to the next sibling
+            }
         }
     }
-}
-    //////////////////////////////////////////////////////////////////
 
+    // Inner BFS traversal method to find combinations for a selected node
+    private void innerBFS(Employee selectedNode) {
+        Queue<Employee> innerQueue = new LinkedList<>();
+        innerQueue.offer(root);  // Start from the root for combinations
 
-    // Method to add a subordinate to a parent employee //added during addEmployee
+        while (!innerQueue.isEmpty()) {
+            Employee current = innerQueue.poll();  // Dequeue the front node
+
+            // Skip if it's the same node or if one is the subordinate/supervisor of the other
+            if (current.getId() != selectedNode.getId() 
+            && current.getParentID() != selectedNode.getId() 
+            && selectedNode.getParentID() != current.getId()
+            && selectedNode.getId() < current.getId()) {
+                
+                // Calculate the skill level for this combination
+                int skillLevel = calculateSkillLevel(selectedNode, current);
+                System.out.println("Valid Combination: " + selectedNode.getName() + " and " + current.getName() +
+                    ": Skill Level = " + skillLevel);
+
+                // Update the optimal combination if necessary
+                if (skillLevel > highestOverallSkillLevel) {
+                    highestOverallSkillLevel = skillLevel;
+                    optimalEmployee1 = selectedNode.getName();
+                    optimalEmployee2 = current.getName();
+                }
+            }
+
+            // Enqueue subordinates for the current employee
+            Employee subordinate = current.left;
+            while (subordinate != null) {
+                innerQueue.offer(subordinate);  // Enqueue subordinates
+                subordinate = subordinate.right;  // Move to the next sibling
+            }
+        }
+    }
+
+    // Method to calculate the total skill level of a combination
+    private int calculateSkillLevel(Employee emp1, Employee emp2) {
+        return emp1.getSkillLevel() + emp2.getSkillLevel();  // Sum the skill levels
+    }
+
+    // Method to add a subordinate to a parent employee
     public void addSubordinate(Employee parent, Employee curr) {
         if (parent.left == null) {
             parent.left = curr;  // Add as the first subordinate (left child)
@@ -157,7 +181,6 @@ private void innerBFS(Employee selectedNode) {
         }
         curr.parent = parent;  // Set the parent reference
     }
-    
 
     // Method to print the tree (pre-order traversal)
     public void printTree(Employee employee, String indent) {
