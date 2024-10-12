@@ -7,15 +7,12 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         OrganizationTree orgTree = new OrganizationTree();
-        List<Employee> employees = readEmployeesFromFile("/home/aicha/Desktop/مقررات/الخوارزميات/المشروع/Multiple Teams/example.txt");
+        List<Employee> employees = readEmployeesFromFile("example.txt");
 
         // Add employees to the organization tree
         for (Employee emp : employees) {
             orgTree.addEmployee(emp);
         }
-
-        // Print the organization tree
-        // orgTree.printTree(orgTree.getRoot(), "");
 
         // Find the optimal team of two members
         orgTree.findAllCombinations();
