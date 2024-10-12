@@ -8,14 +8,14 @@ class OrganizationTree {
     private Employee optimalEmployee1;
     private Employee optimalEmployee2;
     private int highestOverallSkillLevel;
+    private int highestSkillRange;  
 
-    // Constructor to initialize the organization tree
     public OrganizationTree() {
         this.root = null;
-        this.highestOverallSkillLevel = 0;  // Initialize the highest skill level to 0
+        this.highestOverallSkillLevel = 0;  
+        this.highestSkillRange = 0;  
     }
 
-    // Method to add an employee to the tree
     public void addEmployee(Employee curr) {
         // If the employee is the root (parentId is 0), set it as the root
         if (curr.getParentID() == 0) {
@@ -75,14 +75,12 @@ class OrganizationTree {
             System.out.println("\n\nOptimal Combination Based on Total Skill Level");
             System.out.println("Among the valid combinations: The combination " + optimalEmployee1.getName() + ", " + optimalEmployee2.getName() +
                 " has the highest total skill level of " + highestOverallSkillLevel);
-                System.out.println("\n\nOptimal Team:"+ optimalEmployee1.getName() + ", " + optimalEmployee2.getName());
-                System.out.println("Total Skill Level:"+ highestOverallSkillLevel);
-                System.out.println(" Skill Difference (broad skill set): "
-                +Math.max(optimalEmployee1.getSkillLevel(), optimalEmployee2.getSkillLevel())+"-"
-                +Math.min(optimalEmployee1.getSkillLevel(), optimalEmployee2.getSkillLevel())+"="
-                +Math.abs(optimalEmployee1.getSkillLevel()-optimalEmployee2.getSkillLevel()));
-
-
+            System.out.println("\n\nOptimal Team: " + optimalEmployee1.getName() + ", " + optimalEmployee2.getName());
+            System.out.println("Total Skill Level: " + highestOverallSkillLevel);
+            System.out.println("Skill Difference (broad skill set): "
+                + Math.max(optimalEmployee1.getSkillLevel(), optimalEmployee2.getSkillLevel()) + " - "
+                + Math.min(optimalEmployee1.getSkillLevel(), optimalEmployee2.getSkillLevel()) + " = "
+                + highestSkillRange);
         } else {
             System.out.println("No valid combinations found.");
         }
@@ -104,7 +102,7 @@ class OrganizationTree {
             Employee subordinate = selectedNode.left;  // Get the first subordinate
             while (subordinate != null) {
                 outerQueue.offer(subordinate);  // Enqueue the subordinate
-                subordinate = subordinate.right;  // Move to the next sibling
+                subordinate = subordinate.right;  
             }
         }
     }
@@ -118,20 +116,23 @@ class OrganizationTree {
             Employee current = innerQueue.poll();  // Dequeue the front node
 
             // Skip if it's the same node or if one is the subordinate/supervisor of the other
-            if (current.getId() != selectedNode.getId() 
-            && current.getParentID() != selectedNode.getId() 
+            if (current.getId() != selectedNode.getId()
+            && current.getParentID() != selectedNode.getId()
             && selectedNode.getParentID() != current.getId()
             && selectedNode.getId() < current.getId()) {
-                
+
                 // Calculate the skill level for this combination
                 int skillLevel = calculateSkillLevel(selectedNode, current);
+                int skillRange = calculateSkillRange(selectedNode, current);  // Calculate the skill range (difference)
                 System.out.println(selectedNode.getName() + ", " + current.getName() +
-                " Skill Level = "+selectedNode.getSkillLevel()+" + "+current.getSkillLevel()+
-                    " = " + skillLevel);
+                    " Skill Level = " + selectedNode.getSkillLevel() + " + " + current.getSkillLevel() +
+                    " = " + skillLevel + " (Skill Difference = " + skillRange + ")");
 
                 // Update the optimal combination if necessary
-                if (skillLevel > highestOverallSkillLevel) {
+                if (skillLevel > highestOverallSkillLevel || 
+                    (skillLevel == highestOverallSkillLevel && skillRange > highestSkillRange)) {
                     highestOverallSkillLevel = skillLevel;
+                    highestSkillRange = skillRange;  
                     optimalEmployee1 = selectedNode;
                     optimalEmployee2 = current;
                 }
@@ -141,18 +142,20 @@ class OrganizationTree {
             Employee subordinate = current.left;
             while (subordinate != null) {
                 innerQueue.offer(subordinate);  // Enqueue subordinates
-                subordinate = subordinate.right;  // Move to the next sibling
+                subordinate = subordinate.right;  
             }
         }
     }
 
-    // Method to calculate the total skill level of a combination
     private int calculateSkillLevel(Employee emp1, Employee emp2) {
         return emp1.getSkillLevel() + emp2.getSkillLevel();  // Sum the skill levels
     }
 
-    // Method to print the tree (pre-order traversal)
-    public void printTree(Employee employee, String indent) {
+    private int calculateSkillRange(Employee emp1, Employee emp2) {
+        return Math.abs(emp1.getSkillLevel() - emp2.getSkillLevel());  // Calculate the absolute difference
+    }
+
+    public void printTree(Employee employee, String indent) {//do we need it?
         if (employee == null) return;
         System.out.println(indent + employee);
 
@@ -162,7 +165,6 @@ class OrganizationTree {
         printTree(employee.right, indent);
     }
 
-    // Method to retrieve the root of the organization
     public Employee getRoot() {
         return root;
     }
