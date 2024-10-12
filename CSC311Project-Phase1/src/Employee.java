@@ -1,11 +1,11 @@
 class Employee {
     int ParentID;             // Employee's unique ID
     int id;                   // Employee's unique ID
-    String name;             // Employee's name
-    int skillLevel;          // Employee's skill level
-    Employee parent;         // Reference to the parent (supervisor)
-    Employee left;          // Reference to the left child (first subordinate)
-    Employee right;         // Reference to the right sibling (next subordinate of the same parent)
+    String name;              // Employee's name
+    int skillLevel;           // Employee's skill level
+    Employee parent;          // Reference to the parent (supervisor)
+    Employee left;            // Reference to the left child (first subordinate)
+    Employee right;           // Reference to the right sibling (next subordinate of the same parent)
 
     // Constructor to initialize the employee node
     public Employee(int ParentID, String name, int id, int skillLevel) {
@@ -18,7 +18,7 @@ class Employee {
         this.right = null;
     }
 
-    public Employee() {
+    public Employee() {///do we need this?
         this.ParentID = -1;
         this.id = -1;
         this.name = "";
