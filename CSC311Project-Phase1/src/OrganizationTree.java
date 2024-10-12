@@ -72,6 +72,10 @@ class OrganizationTree {
 
         // After processing all nodes, print the overall optimal combination
         if (optimalEmployee1 != null && optimalEmployee2 != null) {
+            if(optimalEmployee1.getSkillLevel() - optimalEmployee2.getSkillLevel() == 0){
+                System.out.println("no optimal Combination since there is no broad skill set ");
+                return;
+            }
             System.out.println("\n\nOptimal Combination Based on Total Skill Level");
             System.out.println("Among the valid combinations: The combination " + optimalEmployee1.getName() + ", " + optimalEmployee2.getName() +
                 " has the highest total skill level of " + highestOverallSkillLevel);
